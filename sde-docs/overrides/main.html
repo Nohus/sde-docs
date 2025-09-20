@@ -1,0 +1,32 @@
+{%- extends "base.html" -%}
+
+{%- import "partials/language.html" as lang with context -%}
+
+{%- block scripts -%} {{ super() }}
+{%- endblock -%}
+
+{%- block extrahead -%}
+{{ super() }}
+{% include "partials/social.html" %}
+{%- endblock -%}
+
+{%- block tabs -%}{%- endblock -%}
+
+{%- block hero -%}
+{{ super() }}
+<div class="esi-hero">
+  {% include "partials/hero.html" %}
+</div>
+{%- endblock -%}
+
+{%- block site_nav -%}
+<!-- Navigation -->
+{%- if nav -%}
+  <div
+    class="esi-sidebar md-sidebar md-sidebar--primary"
+    data-md-type="navigation"
+  >
+  {% include "partials/sidebar-nav.html" %}
+  </div>
+{%- endif -%}
+{%- endblock -%}

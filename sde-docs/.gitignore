@@ -1,0 +1,10 @@
+.env
+.venv/
+/site/
+/.cache/
+/.idea/
+/snippets/**/*.md
+__pycache__/
+/docs/schema/*
+/snippets/
+/docs/built.md

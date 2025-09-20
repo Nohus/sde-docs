@@ -1,0 +1,97 @@
+site_name: EVE Developer Documentation
+site_url: !ENV [SITE_URL, 'https://sde.riftforeve.online/']
+
+repo_url: !ENV [GITHUB_REPO_URL, 'https://github.com/Nohus/sde-docs']
+repo_name: !ENV [GITHUB_REPOSITORY, 'Nohus/sde-docs']
+edit_uri: edit/main/docs/
+
+hooks:
+  - scripts/generate-snippets.py
+
+not_in_nav: |
+  community/sample-service/index.md
+
+theme:
+  name: material
+  logo: assets/images/eve-logo.svg
+  custom_dir: overrides
+  favicon: assets/images/favicon.ico
+  palette:
+    scheme: eveonline
+  font: false
+  features:
+    - content.action.view
+    - content.tooltips
+    - content.tabs.link
+    - navigation.expand
+    - navigation.indexes
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.path
+    - navigation.tabs
+    - navigation.tracking
+    - search.suggest
+    - search.highlight
+    - toc.follow
+    - toc.integrate
+
+watch:
+  - overrides
+  - snippets
+  - scripts
+  - main.py
+
+extra_css:
+  - assets/stylesheet/font.css
+  - assets/stylesheet/theme.css
+
+extra_javascript:
+  - assets/javascript/theme.js
+  - assets/javascript/mathjax.js
+  - https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.0.0/mermaid.min.js
+  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js
+
+extra:
+  homepage: /
+  hero:
+    title: "EVE SDE Schema"
+    subtitle: "Documentation for third-party developers"
+  footer:
+    title: Follow EVE Online
+
+plugins:
+  - search
+  - tags
+  - open-in-new-tab
+  - literate-nav:
+      nav_file: menu.md
+  - privacy:
+      assets: false
+  - macros:
+      on_undefined: keep
+  - include-markdown
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables

@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /sde-docs/
+    schedule:
+      interval: weekly
+      time: "08:00"
+    groups:
+      dependencies:
+        patterns:
+          - '*'
+
+  - package-ecosystem: github-actions
+    directory: /sde-docs/
+    schedule:
+      interval: weekly
+      time: "08:00"
+    groups:
+      dependencies:
+        patterns:
+          - '*'

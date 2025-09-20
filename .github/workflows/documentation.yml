@@ -1,0 +1,78 @@
+name: documentation
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: "15 11 * * *"
+    - cron: "30 11 * * *"
+    - cron: "0 13 * * *"
+
+env:
+  PYTHON_VERSION: 3.x
+
+permissions:
+  contents: write
+  id-token: write
+  pages: write
+
+jobs:
+  documentation:
+    name: Build documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install quicktype
+        run: |
+          npm init -y
+          npm install --save-dev quicktype
+
+      - name: Make quicktype available on PATH
+        run: echo "$PWD/node_modules/.bin" >> "$GITHUB_PATH"
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run Schema generation
+        run: ./gradlew run
+        env:
+          DOWNLOAD_URL_BASE: ${{ secrets.DOWNLOAD_URL_BASE }}
+
+      - name: Setup python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: |
+            sde-docs/requirements.txt
+
+      - name: Install dependencies
+        working-directory: sde-docs
+        run: make init
+
+      - name: Build documentation
+        working-directory: sde-docs
+        run: make build
+        env:
+          GTM_ID: ${{ secrets.GTM_ID }}
+
+      - name: Prepare GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: sde-docs/site
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4

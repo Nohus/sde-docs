@@ -1,0 +1,32 @@
+name: tests
+on:
+  pull_request:
+    branches:
+      - master
+
+env:
+  PYTHON_VERSION: 3.x
+
+jobs:
+  build:
+    name: Build documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: |
+            sde-docs/requirements.txt
+
+      - name: Install dependencies
+        working-directory: sde-docs
+        run: make init
+
+      - name: Build documentation with strict mode
+        working-directory: sde-docs
+        run: make test
