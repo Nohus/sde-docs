@@ -48,8 +48,6 @@ jobs:
 
       - name: Run Schema generation
         run: ./gradlew run
-        env:
-          DOWNLOAD_URL_BASE: ${{ secrets.DOWNLOAD_URL_BASE }}
 
       - name: Setup python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5

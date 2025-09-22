@@ -1,5 +1,4 @@
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -22,7 +21,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.zip.ZipInputStream
-import kotlin.coroutines.coroutineContext
 import kotlin.io.path.copyTo
 import kotlin.io.path.extension
 import kotlin.io.path.isRegularFile
@@ -34,8 +32,7 @@ import kotlin.system.exitProcess
 
 suspend fun main() {
     val json = Json { prettyPrint = true }
-
-    val baseUrl = System.getenv("DOWNLOAD_URL_BASE") ?: throw IllegalArgumentException("DOWNLOAD_URL_BASE environment variable must be set")
+    val baseUrl = "https://developers.eveonline.com/static-data/tranquility/"
 
     println("Checking for latest SDE version")
     val (buildNumber, releaseDate) = getLatestSdeBuildNumberAndTimestamp(baseUrl)
