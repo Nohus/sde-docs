@@ -3,7 +3,7 @@
     --logo-width: 110px;
     --header-padding: 8px 0;
     --nav-width: 1600px;
-    --source-width: 8rem;
+    --source-width: 9rem;
     --header-background: transparent;
     --header-shadow: inherit;
 
@@ -70,7 +70,7 @@
     */
     color-scheme: dark;
 
-    --md-text-font: "Shentox";
+    --md-text-font: "Noto Sans";
     --md-primary-fg-color: hsla(0, 0%, 8%, 0.9);
 
     /* Default color shades */
@@ -424,6 +424,10 @@ body::before {
   margin-top: 100px;
   padding: 50px 0 60px 0;
   background-color: var(--esi-panel);
+}
+
+.esi-footer .copyright {
+    font-size: 15px;
 }
 
 .esi-footer .container {
