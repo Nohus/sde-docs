@@ -8,3 +8,4 @@ __pycache__/
 /docs/schema/*
 /snippets/
 /docs/built.md
+/docs/assets/*.zip

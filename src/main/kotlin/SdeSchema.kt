@@ -31,7 +31,7 @@ import kotlin.io.path.writeText
 import kotlin.system.exitProcess
 
 suspend fun main() {
-    val json = Json { prettyPrint = true }
+    val json = Json
     val baseUrl = "https://developers.eveonline.com/static-data/tranquility/"
 
     println("Checking for latest SDE version")
@@ -41,14 +41,16 @@ suspend fun main() {
         .format(releaseDate)
     println("Latest SDE build number: $buildNumber, released on $formattedReleaseDate")
 
-    val sdeUrl = "${baseUrl}eve-online-static-data-${buildNumber}-jsonl.zip"
+    val sdeJsonLUrl = "${baseUrl}eve-online-static-data-${buildNumber}-jsonl.zip"
     val inputDirectory = Path.of("input").also { it.toFile().mkdirs() }
+    val enhancedOutputDirectory = Path.of("output/enhanced").also { it.toFile().mkdirs() }
+    val enhancedSdeZipTarget = Path.of("sde-docs/docs/assets/eve-online-static-data-${buildNumber}-enhanced-jsonl.zip")
     val schemaOutputDirectory = Path.of("output/schema").also { it.toFile().mkdirs() }
     val docsOutputDirectory = Path.of("sde-docs/docs/schema/").also { it.toFile().mkdirs() }
     val builtFile = Path.of("sde-docs/docs/built.md")
 
     println("Downloading and extracting SDE files")
-    downloadAndExtractZip(sdeUrl, inputDirectory)
+    downloadAndExtractZip(sdeJsonLUrl, inputDirectory)
 
     println("Generating schemas")
     val schemas = inferSchemasInDirectory(inputDirectory)
@@ -64,10 +66,24 @@ suspend fun main() {
         }
     }
 
+    println("Generating enhanced SDE files")
+    EnhancedSdeGenerator(json).generate(inputDirectory, enhancedOutputDirectory, enhancedSdeZipTarget)
+
     println("Generating documentation")
     DocumentationGenerator.generate(schemas, docsOutputDirectory)
 
-    builtFile.writeText("This version is based on SDE version `$buildNumber`, which was released on **$formattedReleaseDate**.")
+    builtFile.writeText(
+        """
+        This version is based on SDE version `$buildNumber`, which was released on **$formattedReleaseDate**.
+        
+        ## Downloads
+        
+        The SDE files can be downloaded here:
+        
+        - **Original**: [eve-online-static-data-${buildNumber}-jsonl.zip]($sdeJsonLUrl)
+        - **Enhanced**: [eve-online-static-data-${buildNumber}-enhanced-jsonl.zip](assets/${enhancedSdeZipTarget.name})
+        """.trimIndent()
+    )
 }
 
 private fun getLatestSdeBuildNumberAndTimestamp(baseUrl: String): Pair<String, Instant> {
