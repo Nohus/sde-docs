@@ -681,6 +681,7 @@ body::before {
 @media screen and (min-width: 76.25em) {
   .esi-sidebar {
     height: auto;
+    width: auto;
   }
   .esi-sidebar .md-nav {
     margin-bottom: 0;
@@ -709,6 +710,10 @@ body::before {
 .md-content a:hover {
   color: var(--esi-accent);
   text-decoration: underline;
+}
+
+.md-content__button {
+  display: none;
 }
 
 .esi-sidebar {
