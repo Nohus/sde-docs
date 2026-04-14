@@ -23,6 +23,8 @@ The enhanced version of the SDE files, which is published above, contains the fo
 
 The enhanced version is generated automatically whenever a new version of the SDE is released.
 
+Thanks to [Hoboleaks](https://sde.hoboleaks.space) for providing the repackaged volumes data.
+
 !!! info "Disclaimer"
 
     This is an unofficial website maintained by Nohus. It is not affiliated with CCP Games.
