@@ -30,6 +30,7 @@ object DocumentationGenerator {
                     val schemaMarkdown = buildString {
                         appendLine("# ${path.name}")
                         appendLine()
+                        appendEnhancedInfo(path.nameWithoutExtension)
                         appendLine("## Schema")
                         appendLine()
                         describeSchema(schema, this)
@@ -49,6 +50,58 @@ object DocumentationGenerator {
                     val outFile = outputDirectory.resolve(path.nameWithoutExtension + ".md")
                     outFile.writeText(markdown)
                 }
+            }
+        }
+    }
+
+    private fun StringBuilder.appendEnhancedInfo(file: String) {
+
+        fun appendHeader() {
+            appendLine("## Enhanced SDE Schema")
+            appendLine("In the [Enhanced SDE](/#enhanced-sde) this file contains an additional field:")
+            appendLine()
+        }
+
+        fun appendFooter() {
+            appendLine()
+            appendLine("The original schema, as in the official SDE download, follows below:")
+        }
+
+        when (file) {
+            "types" -> {
+                appendHeader()
+                appendLine("- `repackagedVolume`: <span style=\"color: var(--md-code-hl-keyword-color)\">integer</span></br>Contains the repackaged volume of the type")
+                appendFooter()
+            }
+            "mapStars" -> {
+                appendHeader()
+                appendLine("- `name`: <span style=\"color: var(--md-code-hl-keyword-color)\">string</span></br>Contains the English name of the Star")
+                appendFooter()
+            }
+            "mapPlanets" -> {
+                appendHeader()
+                appendLine("- `name`: <span style=\"color: var(--md-code-hl-keyword-color)\">string</span></br>Contains the English name of the Asteroid Belt")
+                appendFooter()
+            }
+            "mapMoons" -> {
+                appendHeader()
+                appendLine("- `name`: <span style=\"color: var(--md-code-hl-keyword-color)\">string</span></br>Contains the English name of the Moon")
+                appendFooter()
+            }
+            "mapAsteroidBelts" -> {
+                appendHeader()
+                appendLine("- `name`: <span style=\"color: var(--md-code-hl-keyword-color)\">string</span></br>Contains the English name of the Asteroid Belt")
+                appendFooter()
+            }
+            "mapStargates" -> {
+                appendHeader()
+                appendLine("- `name`: <span style=\"color: var(--md-code-hl-keyword-color)\">string</span></br>Contains the English name of the Stargate")
+                appendFooter()
+            }
+            "npcStations" -> {
+                appendHeader()
+                appendLine("- `name`: <span style=\"color: var(--md-code-hl-keyword-color)\">string</span></br>Contains the English name of the Station")
+                appendFooter()
             }
         }
     }
