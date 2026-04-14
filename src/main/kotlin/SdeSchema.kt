@@ -8,7 +8,9 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.double
 import kotlinx.serialization.json.doubleOrNull
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 import java.io.File
@@ -67,7 +69,12 @@ suspend fun main() {
     }
 
     println("Generating enhanced SDE files")
-    EnhancedSdeGenerator(json).generate(inputDirectory, enhancedOutputDirectory, enhancedSdeZipTarget)
+    val repackagedVolumesUrl = "https://sde.hoboleaks.space/tq/repackagedvolumes.json"
+    val repackagesVolumesJson = URL(repackagedVolumesUrl).readText()
+    val repackagedVolumes = json.parseToJsonElement(repackagesVolumesJson).jsonObject.entries.associate { (typeId, volume) ->
+        typeId.toInt() to volume.jsonPrimitive.double.toInt()
+    }
+    EnhancedSdeGenerator(json).generate(inputDirectory, repackagedVolumes, enhancedOutputDirectory, enhancedSdeZipTarget)
 
     println("Generating documentation")
     DocumentationGenerator.generate(schemas, docsOutputDirectory)

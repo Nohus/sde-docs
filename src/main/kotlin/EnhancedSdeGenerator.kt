@@ -4,6 +4,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import java.nio.file.Files
@@ -19,7 +20,12 @@ import kotlin.io.path.writeLines
 
 class EnhancedSdeGenerator(private val json: Json) {
 
-    fun generate(inputDirectory: Path, outputDirectory: Path, zipTarget: Path) {
+    fun generate(
+        inputDirectory: Path,
+        repackagedVolumes: Map<Int, Int>,
+        outputDirectory: Path,
+        zipTarget: Path
+    ) {
         val sde: List<Pair<Path, List<JsonElement>>> = readSde(inputDirectory)
 
         val systemNamesById = sde.getItems("mapSolarSystems").associate { item ->
@@ -100,13 +106,25 @@ class EnhancedSdeGenerator(private val json: Json) {
         }.map { json.encodeToString(it) }
         outputDirectory.resolve("npcStations.jsonl").writeLines(stationItems)
 
+        val typesItems = sde.getItems("types").map { item ->
+            val typeId = item["_key"].jsonPrimitive.int
+            val repackagedVolume = repackagedVolumes[typeId]
+            item.jsonObject.update {
+                if (repackagedVolume != null) {
+                    it["repackagedVolume"] = JsonPrimitive(repackagedVolume)
+                }
+            }
+        }.map { json.encodeToString(it) }
+        outputDirectory.resolve("types.jsonl").writeLines(typesItems)
+
         val modifiedFiles = setOf(
             "mapStars.jsonl",
             "mapPlanets.jsonl",
             "mapMoons.jsonl",
             "mapAsteroidBelts.jsonl",
             "mapStargates.jsonl",
-            "npcStations.jsonl"
+            "npcStations.jsonl",
+            "types.jsonl",
         )
         sde
             .filter { it.first.name !in modifiedFiles }

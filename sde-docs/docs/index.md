@@ -13,6 +13,7 @@ This website documents the schema of the [JSONL](https://jsonlines.org) files it
 
 The enhanced version of the SDE files, which is published above, contains the following additional information not available in the original files:
 
+- `types.jsonl` has a `repackagedVolume` field added to all repackageable items containing the repackaged volume.
 - `mapStars.jsonl` has a `name` field added to all items containing the star name.
 - `mapPlanets.jsonl` has a `name` field added to all items containing the planet name.
 - `mapMoons.jsonl` has a `name` field added to all items containing the moon name.
