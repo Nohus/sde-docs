@@ -17,6 +17,7 @@ import java.io.File
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -24,6 +25,7 @@ import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.zip.ZipInputStream
 import kotlin.io.path.copyTo
+import kotlin.io.path.deleteIfExists
 import kotlin.io.path.extension
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.name
@@ -44,9 +46,11 @@ suspend fun main() {
     println("Latest SDE build number: $buildNumber, released on $formattedReleaseDate")
 
     val sdeJsonLUrl = "${baseUrl}eve-online-static-data-${buildNumber}-jsonl.zip"
+    val sdeJsonLLatestUrl = "https://developers.eveonline.com/static-data/eve-online-static-data-latest-jsonl.zip"
     val inputDirectory = Path.of("input").also { it.toFile().mkdirs() }
     val enhancedOutputDirectory = Path.of("output/enhanced").also { it.toFile().mkdirs() }
     val enhancedSdeZipTarget = Path.of("sde-docs/docs/assets/eve-online-static-data-${buildNumber}-enhanced-jsonl.zip")
+    val enhancedSdeZipLatestTarget = Path.of("sde-docs/docs/assets/eve-online-static-data-latest-enhanced-jsonl.zip")
     val schemaOutputDirectory = Path.of("output/schema").also { it.toFile().mkdirs() }
     val docsOutputDirectory = Path.of("sde-docs/docs/schema/").also { it.toFile().mkdirs() }
     val builtFile = Path.of("sde-docs/docs/built.md")
@@ -75,6 +79,7 @@ suspend fun main() {
         typeId.toInt() to volume.jsonPrimitive.double.toInt()
     }
     EnhancedSdeGenerator(json).generate(inputDirectory, repackagedVolumes, enhancedOutputDirectory, enhancedSdeZipTarget)
+    enhancedSdeZipTarget.copyTo(enhancedSdeZipLatestTarget, StandardCopyOption.REPLACE_EXISTING)
 
     println("Generating documentation")
     DocumentationGenerator.generate(schemas, docsOutputDirectory)
@@ -87,8 +92,8 @@ suspend fun main() {
         
         The SDE files can be downloaded here:
         
-        - **Original**: [eve-online-static-data-${buildNumber}-jsonl.zip]($sdeJsonLUrl)
-        - **Enhanced**: [eve-online-static-data-${buildNumber}-enhanced-jsonl.zip](assets/${enhancedSdeZipTarget.name})
+        - **Original**: [eve-online-static-data-${buildNumber}-jsonl.zip]($sdeJsonLUrl) ([link to latest]($sdeJsonLLatestUrl))
+        - **Enhanced**: [eve-online-static-data-${buildNumber}-enhanced-jsonl.zip](assets/${enhancedSdeZipTarget.name}) ([link to latest](assets/${enhancedSdeZipLatestTarget.name}))
         """.trimIndent()
     )
 }
