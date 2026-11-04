@@ -5,7 +5,7 @@ on:
       - master
 
 env:
-  PYTHON_VERSION: 3.x
+  PYTHON_VERSION: '3.13'
 
 jobs:
   build:
