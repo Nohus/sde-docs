@@ -28,4 +28,6 @@ tasks.register<JavaExec>("run") {
     description = "Runs the main class"
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("SdeSchemaKt")
+    // Leave room for Gradle and the Quicktype child process on CI runners.
+    maxHeapSize = "1g"
 }

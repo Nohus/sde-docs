@@ -1,6 +1,3 @@
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -22,10 +19,8 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-import java.util.concurrent.ConcurrentHashMap
 import java.util.zip.ZipInputStream
 import kotlin.io.path.copyTo
-import kotlin.io.path.deleteIfExists
 import kotlin.io.path.extension
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.name
@@ -62,14 +57,10 @@ suspend fun main() {
     val schemas = inferSchemasInDirectory(inputDirectory)
 
     println("Generating code snippets")
-    coroutineScope {
-        schemas.entries.forEach { (path, schema) ->
-            launch(Dispatchers.Default) {
-                val file = schemaOutputDirectory.resolve(path.nameWithoutExtension + ".schema.json")
-                file.writeText(json.encodeToString(JsonElement.serializer(), schema))
-                generateCodeSnippets(file)
-            }
-        }
+    schemas.entries.forEach { (path, schema) ->
+        val file = schemaOutputDirectory.resolve(path.nameWithoutExtension + ".schema.json")
+        file.writeText(json.encodeToString(JsonElement.serializer(), schema))
+        generateCodeSnippets(file)
     }
 
     println("Generating enhanced SDE files")
@@ -173,20 +164,12 @@ private val json = Json {
     allowStructuredMapKeys = true
 }
 
-private suspend fun inferSchemasInDirectory(inputDirectory: Path): Map<Path, JsonObject> {
-    val schemasByFile = ConcurrentHashMap<Path, JsonObject>()
-    coroutineScope {
-        Files.walk(inputDirectory).use { stream ->
-            stream
-                .filter { it.isRegularFile() && it.extension == "jsonl" }
-                .forEach { path ->
-                    launch(Dispatchers.Default) {
-                        schemasByFile[path] = inferSchemaFromJsonl(path)
-                    }
-                }
-        }
+private fun inferSchemasInDirectory(inputDirectory: Path): Map<Path, JsonObject> {
+    return Files.walk(inputDirectory).use { stream ->
+        stream.filter { it.isRegularFile() && it.extension == "jsonl" }
+            .toList()
+            .associateWith { inferSchemaFromJsonl(it) }
     }
-    return schemasByFile
 }
 
 private fun inferSchemaFromJsonl(file: Path): JsonObject {
